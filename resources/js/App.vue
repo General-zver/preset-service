@@ -1,78 +1,24 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import api from './services/api';
+    import { ref, onMounted } from 'vue';
+    import { useRouter } from 'vue-router';
+/* import api from './services/api'; */
 
-const email = ref('');
-const password = ref('');
-const user = ref(null);
-const error = ref('');
-const loading = ref(false);
+    const loading = ref(false);
+    const router = useRouter();
 
-async function login() {
-    loading.value = true;
-    error.value = '';
-
-    try {
-        const { data } = await api.post('/login', {
-            email: email.value,
-            password: password.value,
-        });
-
-        localStorage.setItem('token', data.token);
-        password.value = '';
-
-        await getUser();
-    } catch (e) {
-        error.value = e.response?.data?.message
-            || 'Ошибка авторизации';
-    } finally {
-        loading.value = false;
-    }
-}
-
-async function getUser() {
-    try {
-        const { data } = await api.get('/user');
-        user.value = data;
-    } catch (e) {
-        if (e.response?.status === 401) {
-            localStorage.removeItem('token');
-            user.value = null;
-        } else {
-            error.value = 'Ошибка загрузки пользователя';
+    onMounted(async () => {
+        if (!localStorage.getItem('token')) {
+            router.replace('/login');
         }
-    }
-}
-
-async function logout() {
-    try {
-        await api.post('/logout');
-    } finally {
-        localStorage.removeItem('token');
-        user.value = null;
-    }
-}
-
-onMounted(async () => {
-    if (localStorage.getItem('token')) {
-        await getUser();
-    }
-});
+    });
 </script>
 
 <template>
-    <div class="main">
-        <p v-if="error">{{error}}</p>
-
-        <div v-if="user" class="">
-            <div class="">{{user.name}}</div>
-        </div>
-        <form v-else @submit.prevent="login" class="auth-form">
-            <h1 class="text-center">Авторизация</h1>
-            <input v-model="email" type="email" placeholder="Почта" required>
-            <input v-model="password" type="password" placeholder="Пароль" required>
-            <button type="submit">{{ loading ? "Вход" : "Войти" }}</button>
-        </form>
+    <div v-if="loading" class="preloader">
+        <div class="loader"></div>
+    </div>
+    <div class="123">
+        <RouterView />
     </div>
 </template>
 <style>
@@ -117,4 +63,32 @@ onMounted(async () => {
     .text-center{
         text-align: center;
     }
+    /* HTML: <div class="loader"></div> */
+    .preloader{
+        top:0;
+        left: 0;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        background:rgba(0, 0, 0, 0.45);
+    }
+    .loader {
+        position: absolute;
+        top: calc(50% - 50px);
+        left: calc(50% - 50px);
+        width: 50px;
+        padding: 8px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: #25b09b;
+        --_m: 
+            conic-gradient(#0000 10%,#000),
+            linear-gradient(#000 0 0) content-box;
+        -webkit-mask: var(--_m);
+                mask: var(--_m);
+        -webkit-mask-composite: source-out;
+                mask-composite: subtract;
+        animation: l3 1s infinite linear;
+    }
+    @keyframes l3 {to{transform: rotate(1turn)}}
 </style>

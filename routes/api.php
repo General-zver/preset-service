@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PresetController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -32,6 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
+    Route::post('/presets', [PresetController::class, 'index']);
 
     Route::post('/logout', function (Request $request) {
         $request->user()->currentAccessToken()->delete();
