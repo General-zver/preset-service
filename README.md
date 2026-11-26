@@ -8,16 +8,16 @@ PHP 8.2.35
 
 
 # установка (linux, apache)
-/etc/hosts добавить маршрут(в .env APP_URL)
+# /etc/hosts добавить маршрут(в .env APP_URL)
 
-создать файл конфигурации apache с содержимым:
+# создать файл конфигурации apache с содержимым:
 <VirtualHost *:80>
 
-    ServerName preset-service.local #(ваш домен)
-    ServerAlias www.preset-service.local #(ваш домен)
+    ServerName preset-service.local #(ваш домен - удалить комментарий из конфига иначе будет ошибка)
+    ServerAlias www.preset-service.local #(ваш домен - удалить комментарий из конфига иначе будет ошибка)
     ServerAdmin webmaster@localhost
-    DocumentRoot /var/www/html/preset-service.local #(ссылка на public из папки проекта)
-    <Directory "/var/www/html/preset-service.local"> #(ссылка на public из папки проекта)
+    DocumentRoot /var/www/html/preset-service.local #(ссылка на public из папки проекта - удалить комментарий из конфига иначе будет ошибка)
+    <Directory "/var/www/html/preset-service.local"> #(ссылка на public из папки проекта - удалить комментарий из конфига иначе будет ошибка)
     Options Indexes FollowSymLinks MultiViews
     AllowOverride All
     Order allow,deny
@@ -31,7 +31,10 @@ PHP 8.2.35
 
 # создание ссылка
 # ln -s [полный путь до папки]/public/ preset-service.local
-
+# после копирования проекта
+# выполнить команды composer install
+# npm i
+# npm run dev/build
 
 
 # user
