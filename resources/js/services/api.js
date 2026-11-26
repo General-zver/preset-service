@@ -1,4 +1,5 @@
 import axios from 'axios';
+import router from '../router/index.js';
 
 const api = axios.create({
     baseURL: '/api',

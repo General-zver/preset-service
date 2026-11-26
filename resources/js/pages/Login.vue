@@ -53,6 +53,12 @@
             loading.value = false;
         }
     }
+
+    onMounted(async () => {
+        if (localStorage.getItem('token')) {
+            await getUser();
+        }
+    });
 </script>
 
 <template>

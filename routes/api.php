@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PresetController;
+use App\Http\Controllers\ProductController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -18,7 +19,7 @@ Route::post('/login', function (Request $request) {
 
     $user = User::where('email', $request->email)->first();
 
-    if (!$user || !Hash::check($request->password, $user->password)) {
+    if (! $user || ! Hash::check($request->password, $user->password)) {
         return response()->json([
             'message' => 'Invalid credentials',
         ], 401);
@@ -33,8 +34,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-
-    Route::post('/presets', [PresetController::class, 'index']);
+    Route::prefix('presets')->group(function () {
+        Route::get('/', [PresetController::class, 'index']);
+        Route::post('/', [PresetController::class, 'store']);
+        Route::patch('/{preset}', [PresetController::class, 'update']);
+        Route::delete('/{preset}', [PresetController::class, 'destroy']);
+        Route::post('/{id}/book', [PresetController::class, 'book']);
+    });
+    Route::prefix('products')->group(function () {
+        Route::get('/', [ProductController::class, 'index']);
+        Route::post('/', [ProductController::class, 'store']);
+        Route::patch('/{product}', [ProductController::class, 'update']);
+        Route::delete('/{product}', [ProductController::class, 'destroy']);
+    });
 
     Route::post('/logout', function (Request $request) {
         $request->user()->currentAccessToken()->delete();

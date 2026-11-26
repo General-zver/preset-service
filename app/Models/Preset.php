@@ -14,6 +14,7 @@ class Preset extends Model
         'name',
         'status',
         'preset_price',
+        'user_id'
     ];
 
 
@@ -21,7 +22,7 @@ class Preset extends Model
         return $this->status ? "Забронирован" : "Доступен";
     }
 
-    public function getRelatedProducts() {
+    public function products() {
         return $this->hasMany(Product::class);
     }
 }

@@ -12,7 +12,7 @@ class PresetsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()?->email === 'manager@example.com';
     }
 
     /**
@@ -23,8 +23,14 @@ class PresetsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'page' => 'integer|nullable',
-            'pagintaion_size' => 'integer|nullable',
+            'name' => 'required|alpha_num',
+            'preset_price' => 'required|numeric',
+
+            'product_ids' => 'sometimes|array',
+            'product_ids.*' => 'integer|distinct|exists:products,id',
+
+            'status' => ['prohibited'],
+            'user_id' => ['prohibited'],
         ];
     }
 }

@@ -32,6 +32,7 @@
         } finally {
             localStorage.removeItem('token');
             user.value = null;
+            router.replace('/login');
         }
     }
 
@@ -49,11 +50,15 @@
         <p v-if="error">{{error}}</p>
 
         <div v-if="user" class="">
-            <div class="mb-3 font-semibold text-lg">Привет, {{user.name}}</div>
+            <div class="flex justify-between">
+                <div class="mb-3 font-semibold text-lg">Привет, {{user.name}}</div>
+                <button class="border px-2 py-1 rounded cursor-pointer" type="button" @click="logout">Выйти</button>
+            </div>
             <div class="flex flex-col">
                 <div class="">Список твоих возможностей:</div>
                 <RouterLink to="/presets" class="underline">Список пресетов</RouterLink>
                 <RouterLink to="/products" class="underline">Список товаров</RouterLink>
+                <RouterLink to="/docs" class="underline">Документация API</RouterLink>
             </div>
         </div>
         

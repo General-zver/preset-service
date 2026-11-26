@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Controllers\PresetController;
+use App\Http\Controllers\ProductController;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/{any?}', 'app')->where('any', '.*');
+Route::view('/{any?}', 'app')->where('any', '^(?!api(?:/|$)).*');
