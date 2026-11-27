@@ -35,7 +35,8 @@ PHP 8.2.35
 # выполнить команды composer install
 # npm i
 # npm run dev/build
-
+# создать файл .env из файла .env.example
+# выполнить php artisan key:generate
 
 # user
 # user@example.com password
