@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::prefix('presets')->group(function () {
         Route::get('/', [PresetController::class, 'index']);
+        Route::get('/{preset}', [PresetController::class, 'show']);
         Route::post('/', [PresetController::class, 'store']);
         Route::patch('/{preset}', [PresetController::class, 'update']);
         Route::delete('/{preset}', [PresetController::class, 'destroy']);

@@ -97,6 +97,38 @@ Authorization: Bearer <token>`,
                 note: 'Ответ также содержит стандартные ссылки Laravel: first_page_url, last_page_url, links, next_page_url и prev_page_url.',
             },
             {
+                method: 'GET',
+                path: '/api/presets/{preset}',
+                status: '200 OK',
+                auth: true,
+                description: 'Возвращает один пресет и список входящих в него продуктов.',
+                request: `GET /api/presets/1 HTTP/1.1
+Accept: application/json
+Authorization: Bearer <token>`,
+                response: `{
+  "data": {
+    "id": 1,
+    "name": "Preset1",
+    "status": 0,
+    "preset_price": 1500,
+    "user_id": null,
+    "created_at": "2026-11-27T10:00:00.000000Z",
+    "updated_at": "2026-11-27T10:00:00.000000Z",
+    "products": [
+      {
+        "id": 1,
+        "name": "Product1",
+        "price": "500.00",
+        "composition": "Material1",
+        "preset_id": 1,
+        "created_at": "2026-11-27T09:00:00.000000Z",
+        "updated_at": "2026-11-27T10:00:00.000000Z"
+      }
+    ]
+  }
+}`,
+            },
+            {
                 method: 'POST',
                 path: '/api/presets',
                 status: '201 Created',

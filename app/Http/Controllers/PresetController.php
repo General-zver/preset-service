@@ -55,6 +55,27 @@ class PresetController extends Controller
         return response()->json($data, 200);
     }
 
+    public function show(Preset $preset): JsonResponse
+    {
+        try {
+            $preset->load([
+                'products' => fn ($query) => $query->orderBy('id'),
+            ]);
+
+            return response()->json([
+                'data' => $preset,
+            ]);
+        } catch (\Throwable $th) {
+            report($th);
+
+            return $this->problemResponse(
+                title: 'Внутренняя ошибка сервера',
+                detail: 'Не удалось получить пресет.',
+                status: 500,
+            );
+        }
+    }
+
     public function store(PresetsRequest $request): JsonResponse
     {
         try {

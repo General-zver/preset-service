@@ -57,7 +57,7 @@
                         <th class="border p-1 w-[25%]">Название</th>
                         <th class="border p-1 w-[10%]">Цена товара</th>
                         <th class="border p-1 w-[55%]">Состав</th>
-                        <th class="border p-1 w-[10%]">Связанный пресет</th>
+                        <!-- <th class="border p-1 w-[10%]">Связанный пресет</th> -->
                     </tr>
                 </thead>
                 <tbody v-for="product in products" :key="product.id">
@@ -65,7 +65,7 @@
                         <td class="border p-1">#{{ product.id }}. {{ product.name }}</td>
                         <td class="border p-1">{{ product.price }}</td>
                         <td class="border p-1">{{ product.composition }}</td>
-                        <td class="border p-1">{{ product.preset_id }}</td>
+                        <!-- <td class="border p-1">{{ product.preset_id }}</td> -->
                     </tr>
                 </tbody>
             </table>

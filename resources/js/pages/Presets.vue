@@ -12,8 +12,48 @@
     const sort_field = ref('');
     const sort_direction = ref('');
     const filter_params = ref([]);
+    const selected_preset = ref(null);
+    const preset_loading = ref(false);
+    const booking = ref(false);
 
     const error = ref('');
+
+    const openPreset = async (preset) => {
+        error.value = '';
+        selected_preset.value = preset;
+        preset_loading.value = true;
+
+        try {
+            const { data } = await api.get(`/presets/${preset.id}`);
+            Object.assign(preset, data.data);
+        } catch (e) {
+            error.value = e.response?.data?.detail ?? 'Не удалось получить данные пресета';
+        } finally {
+            preset_loading.value = false;
+        }
+    }
+
+    const closePreset = () => {
+        selected_preset.value = null;
+    }
+
+    const bookPreset = async (preset) => {
+        booking.value = true;
+        error.value = '';
+
+        try {
+            await api.post(`/presets/${preset.id}/book`);
+            preset.status = true;
+        } catch (e) {
+            if (e.response?.status === 409) {
+                preset.status = true;
+            }
+
+            error.value = e.response?.data?.detail ?? 'Не удалось забронировать пресет';
+        } finally {
+            booking.value = false;
+        }
+    }
 
     async function getPresets(page_number = page.value, page_size = pagintaion_size.value) {
         loading.value = true;
@@ -95,6 +135,7 @@
 <template>
     <div class="main">
         <h2 class="mb-4 font-semibold">Список пресетов</h2>
+        <p v-if="error" class="mb-4">{{ error }}</p>
         <div class="my-4">
             <select class="border py-1 px-2 rounded" @change="setFilter($event,'status')">
                 <option value="">Все</option>
@@ -131,14 +172,29 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="preset in presets" :key="preset.id">
+                    <tr
+                        v-for="preset in presets"
+                        :key="preset.id"
+                        class="cursor-pointer"
+                        tabindex="0"
+                        @click="openPreset(preset)"
+                        @keydown.enter="openPreset(preset)"
+                    >
                         <td class="border p-1">#{{preset.id}}. {{preset.name}}</td>
                         <td class="border p-1">{{preset.status ? 'Забронировано' : "Доступно"}}</td>
                         <td class="border p-1">{{preset.products_count}}</td>
                         <td class="border p-1">{{preset.products_sum}}</td>
                         <td class="border p-1">{{preset.preset_price}}</td>
                         <td class="border">
-                            <button v-if="!preset.status" class="w-full p-1 cursor-pointer" @click="">Забронировать</button>
+                            <button
+                                v-if="!preset.status"
+                                class="w-full p-1 cursor-pointer"
+                                type="button"
+                                :disabled="booking"
+                                @click.stop="bookPreset(preset)"
+                            >
+                                {{ booking ? 'Бронирование...' : 'Забронировать' }}
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -146,6 +202,77 @@
         </div>
         <div class="pagination flex flex-row mt-2">
             <button type="button" class="border p-1 mx-1 cursor-pointer select-none"v-for="link in pagination_data.links"  @click="test($event, link.page)" v-html="link.label"></button>
+        </div>
+
+        <div
+            v-if="selected_preset"
+            class="fixed inset-0 flex items-center justify-center bg-black/40 p-4"
+            @click.self="closePreset"
+        >
+            <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto border bg-white p-4 shadow-xs" role="dialog" aria-modal="true">
+                <h3 class="mb-4 text-lg font-semibold">Просмотр пресета #{{ selected_preset.id }}</h3>
+                <p v-if="error" class="mb-3">{{ error }}</p>
+
+                <dl class="mb-4">
+                    <div class="flex justify-between border-b py-2">
+                        <dt class="font-semibold">Название</dt>
+                        <dd>{{ selected_preset.name }}</dd>
+                    </div>
+                    <div class="flex justify-between border-b py-2">
+                        <dt class="font-semibold">Статус</dt>
+                        <dd>{{ selected_preset.status ? 'Забронировано' : 'Доступно' }}</dd>
+                    </div>
+                    <div class="flex justify-between border-b py-2">
+                        <dt class="font-semibold">Цена пресета</dt>
+                        <dd>{{ selected_preset.preset_price }}</dd>
+                    </div>
+                    <div class="flex justify-between border-b py-2">
+                        <dt class="font-semibold">Количество товаров</dt>
+                        <dd>{{ selected_preset.products_count }}</dd>
+                    </div>
+                    <div class="flex justify-between border-b py-2">
+                        <dt class="font-semibold">Стоимость товаров</dt>
+                        <dd>{{ selected_preset.products_sum ?? 0 }}</dd>
+                    </div>
+                </dl>
+
+                <div class="mb-4">
+                    <h4 class="mb-2 font-semibold">Товары в пресете</h4>
+                    <p v-if="preset_loading">Загрузка...</p>
+                    <div v-else-if="selected_preset.products?.length" class="overflow-x-auto">
+                        <table class="w-full shadow-xs">
+                            <thead>
+                                <tr>
+                                    <th class="border p-1 text-left">Название</th>
+                                    <th class="border p-1 text-left">Цена</th>
+                                    <th class="border p-1 text-left">Состав</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="product in selected_preset.products" :key="product.id">
+                                    <td class="border p-1">{{ product.name }}</td>
+                                    <td class="border p-1">{{ product.price }}</td>
+                                    <td class="border p-1">{{ product.composition }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p v-else>В пресете нет товаров.</p>
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <button
+                        v-if="!selected_preset.status"
+                        class="cursor-pointer rounded border px-3 py-1"
+                        type="button"
+                        :disabled="booking"
+                        @click="bookPreset(selected_preset)"
+                    >
+                        {{ booking ? 'Бронирование...' : 'Забронировать' }}
+                    </button>
+                    <button class="cursor-pointer rounded border px-3 py-1" type="button" @click="closePreset">Закрыть</button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
