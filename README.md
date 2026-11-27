@@ -11,32 +11,36 @@ PHP 8.2.35
 # /etc/hosts добавить маршрут(в .env APP_URL)
 
 ## создать файл конфигурации apache с содержимым:
-<VirtualHost *:80>
-
-    ServerName preset-service.local #(ваш домен - **удалить комментарий из конфига иначе будет ошибка**)
-    ServerAlias www.preset-service.local #(ваш домен - **удалить комментарий из конфига иначе будет ошибка**)
-    ServerAdmin webmaster@localhost
-    DocumentRoot /var/www/html/preset-service.local #(ссылка на public из папки проекта - **удалить комментарий из конфига иначе будет ошибка**)
-    <Directory "/var/www/html/preset-service.local"> #(ссылка на public из папки проекта - **удалить комментарий из конфига иначе будет ошибка**)
-    Options Indexes FollowSymLinks MultiViews
-    AllowOverride All
-    Order allow,deny
-    allow from all
-    Require all granted
-    </Directory>
-    ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-
-</VirtualHost>
+```
+    <VirtualHost *:80>
+    
+        ServerName preset-service.local #(ваш домен - **удалить комментарий из конфига иначе будет ошибка**)
+        ServerAlias www.preset-service.local #(ваш домен - **удалить комментарий из конфига иначе будет ошибка**)
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/html/preset-service.local #(ссылка на public из папки проекта - **удалить комментарий из конфига иначе будет ошибка**)
+        <Directory "/var/www/html/preset-service.local"> #(ссылка на public из папки проекта - **удалить комментарий из конфига иначе будет ошибка**)
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Order allow,deny
+        allow from all
+        Require all granted
+        </Directory>
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+    
+    </VirtualHost>
+```
 
 ## создание ссылка
-### ln -s [полный путь до папки]/public/ preset-service.local
-### после копирования проекта
-### выполнить команды composer install
-### npm i
-### npm run dev/build
-### создать файл .env из файла .env.example
-### выполнить php artisan key:generate
+```
+ ln -s [полный путь до папки]/public/ preset-service.local
+ после копирования проекта
+ выполнить команды composer install
+ npm i
+ npm run dev/build
+ создать файл .env из файла .env.example
+ выполнить php artisan key:generate
+```
 
 ## user
  user@example.com password
